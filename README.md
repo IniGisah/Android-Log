@@ -19,7 +19,7 @@
     - Make sure you have MySQL installed on your system. If not, follow the official MySQL installation guide for your operating system.
 
 2. **Configure MySQL Database:**
-    - Open the `dbConfig.js` file located in the `modules` folder.
+    - Open the [`dbConfig.js`](https://github.com/IniGisah/Android-Log/blob/main/modules/dbConfig.js) file located in the `modules` folder.
     - Update the database configuration settings according to your MySQL setup.
     - Save the changes.
 
@@ -48,7 +48,8 @@ CREATE TABLE activeuser (
 5.  **Enter Data in ActiveUser Table:**
     *   Populate the `activeuser` table with your login details.
     ```sql
-    INSERT INTO activeuser (username, password, name) VALUES ('johnDoe', 'myPassword', 'John Doe');```
+    INSERT INTO activeuser (username, password, name) VALUES ('johnDoe', 'myPassword', 'John Doe');
+    ```
 
 ### Getting Ready
 1.  **Install Node Packages:**
