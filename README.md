@@ -25,16 +25,18 @@
 
 ```sql
 -- Victims Table
-CREATE TABLE victims (
-  ID VARCHAR(255) NOT NULL,
-  Country VARCHAR(255) NULL,
-  ISP VARCHAR(255) NULL,
-  IP VARCHAR(255) NULL,
-  Brand VARCHAR(255) NULL,
-  Model VARCHAR(255) NULL,
-  Manufacture VARCHAR(255) NULL,
-  PRIMARY KEY (ID)
-) ENGINE=InnoDB;
+CREATE TABLE `victims` (
+  `ID` varchar(255) NOT NULL,
+  `DeviceName` varchar(300) NOT NULL,
+  `Country` varchar(255) DEFAULT NULL,
+  `ISP` varchar(255) DEFAULT NULL,
+  `IP` varchar(255) DEFAULT NULL,
+  `Brand` varchar(255) DEFAULT NULL,
+  `Model` varchar(255) DEFAULT NULL,
+  `Manufacture` varchar(255) DEFAULT NULL,
+  `HWID` varchar(300) NOT NULL,
+  `isOnline` tinyint(1) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Active User
 CREATE TABLE activeuser (

@@ -10,8 +10,8 @@ const webRoute = Router()
 
 webRoute.use('/', (req, res, next) => {
     //console.log(req.path)
-    const bypassRoutes = ["/login", "/info", "/send", "/files", "/download", "/content"];
-    if (bypassRoutes.includes(req.path) || req.path.startsWith("/content/") || req.path.startsWith("/download/")) {
+    const bypassRoutes = ["/login", "/info", "/send", "/files", "/download", "/content", "download-all"];
+    if (bypassRoutes.includes(req.path) || req.path.startsWith("/content/") || req.path.startsWith("/download/") ||req.path.startsWith("/download-all/")) {
         next(); // Bypass the session check for /login
     } else if (req.session.name) {
         res.sendFile(path.resolve("./static/html/index.html"));

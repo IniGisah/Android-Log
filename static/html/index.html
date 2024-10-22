@@ -84,6 +84,7 @@
                                 <span>--</span>
                             </div>
                         </div>
+                        
                         <p style="color: red;" id="devicestatus"></p>
                         <div id="attackFuns">
                             <ul>
@@ -114,11 +115,12 @@
             <div id="container">
                 <div id="filelistdiv" style="flex: 1 1 20%;">
                     <h1 id="lastTitle" style="color: black; font-size: larger; font-weight: bolder;">Download latest logs</h1>
+                    <button id="downloadAllButton" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">Download All Logs Files by ID</button>
                     <div class="date-filter-container">
                         <p id="subtitle" style="color: black; font-size: medium;">Filter by date : </p>
                         <input type="date" id="dateInput" onchange="filterFiles(this.value)">
                     </div>
-                    <ul id="fileList"></ul>
+                    <ul id="fileList" style="overflow-y: auto; max-height: 500px;"></ul>
                 </div>
                 <div id="right">
                     <!-- Last log related content -->
@@ -137,6 +139,7 @@
                         <th>Device ID</th>
                         <th>Device name</th>
                         <th>Model</th>
+                        <th>IP Address</th>
                         <th>Status</th>
                     </tr>
                 </thead>
